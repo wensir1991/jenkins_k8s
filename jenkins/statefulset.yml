@@ -19,7 +19,7 @@ spec:
       serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: jenkins/jenkins:lts-alpine
+          image: registry.cn-shenzhen.aliyuncs.com/wenjusir/aju:jenkins_lts-alpine
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
