@@ -1,22 +1,38 @@
 FROM centos:7
-MAINTAINER www.ctnrs.com
+MAINTAINER wenjusir
 
 ENV VERSION=8.0.52
 
-RUN yum install java-1.8.0-openjdk wget curl unzip iproute net-tools -y && \
+RUN yum install wget curl unzip iproute net-tools telnet -y && \
     yum clean all && \
     rm -rf /var/cache/yum/*
+	
+RUN cd /root && \
+ wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u141-b15/336fa29ff2bb4ef291e347e091f7f4a7/jdk-8u141-linux-x64.tar.gz" && \
+ tar zxf jdk-8u141-linux-x64.tar.gz  && \
+ mv jdk1.8.0_141  /usr/local/jdk
 
-RUN wget http://mirrors.shu.edu.cn/apache/tomcat/tomcat-8/v${VERSION}/bin/apache-tomcat-${VERSION}.tar.gz && \
+RUN cd /root && \
+  wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz && \
+  tar zxf zookeeper-3.4.14.tar.gz && \
+  mv  zookeeper-3.4.14  /usr/local/zookeeper && \
+  mv /usr/local/zookeeper/conf/zoo_sample.cfg /usr/local/zookeeper/conf/zoo.cfg
+ 
+RUN cd /root && \
+    wget http://mirrors.shu.edu.cn/apache/tomcat/tomcat-8/v${VERSION}/bin/apache-tomcat-${VERSION}.tar.gz && \
     tar zxf apache-tomcat-${VERSION}.tar.gz && \
     mv apache-tomcat-${VERSION} /usr/local/tomcat && \
     rm -rf apache-tomcat-${VERSION}.tar.gz /usr/local/tomcat/webapps/* && \
     sed -i '1a JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom"' /usr/local/tomcat/bin/catalina.sh && \
-    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+	rm -rf /root/* 
 
-ENV PATH $PATH:/usr/local/tomcat/bin
+ENV JAVA_HOME=/usr/local/jdk
+ENV JRE_HOME=$JAVA_HOME/jre
+ENV CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
+ENV PATH=/sbin:$JAVA_HOME/bin:$PATH
 
-WORKDIR /usr/local/tomcat
-
-EXPOSE 8080
-CMD ["catalina.sh", "run"]
+COPY run.sh /tmp/run.sh
+RUN chmod +x /tmp/run.sh
+EXPOSE 2181 8080
+CMD ["/tmp/run.sh"]
