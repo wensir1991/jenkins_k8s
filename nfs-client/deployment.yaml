@@ -19,7 +19,7 @@ spec:
       serviceAccountName: nfs-client-provisioner
       containers:
         - name: nfs-client-provisioner
-          image: lizhenliang/nfs-client-provisioner:latest
+          image: registry.cn-shenzhen.aliyuncs.com/wenjusir/aju:nfs-client-provisioner
           volumeMounts:
             - name: nfs-client-root
               mountPath: /persistentvolumes
@@ -29,9 +29,9 @@ spec:
             - name: NFS_SERVER
               value: 192.168.31.64 
             - name: NFS_PATH
-              value: /ifs/kubernetes
+              value: /data/nfs
       volumes:
         - name: nfs-client-root
           nfs:
             server: 192.168.31.64
-            path: /ifs/kubernetes
+            path: /data/nfs
