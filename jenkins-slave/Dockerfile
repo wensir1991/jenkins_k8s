@@ -1,7 +1,7 @@
 FROM centos:7
 LABEL maintainer wenjusir
 
-RUN yum install -y unzip iproute net-tools telnet git libtool-ltdl-devel && \ 
+RUN yum install -y wget unzip iproute net-tools telnet git libtool-ltdl-devel && \ 
     yum clean all && \
     rm -rf /var/cache/yum/* && \
     mkdir -p /usr/share/jenkins
